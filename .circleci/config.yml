@@ -3,7 +3,7 @@
 # This code is licensed from CircleCI to the user under the MIT license. See
 # https://circleci.com/orbs/registry/licensing for details.
 version: 2.1
-description: DigitalOcean Kubernetes Engine Orb
+description: Deploying to DigitalOcean Kubernetes Engine Orb
 
 # Orb Dependencies
 orbs:
@@ -55,3 +55,12 @@ jobs:
       - initialize:
           cluster: <<parameters.cluster>>
           digitalocean-access-token: <<parameters.digitalocean-access-token>>
+
+workflows:
+  deployment:
+    jobs:
+      - install_and_initialize_cli:
+          cluster: k8s-challenge
+          filters:
+             branches:
+               only: [main]
