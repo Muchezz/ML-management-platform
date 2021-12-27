@@ -45,7 +45,7 @@ jobs:
          - run: 
              name: Build & Push the Preprocess image
              command: |
-                docker build ./kubeflow-pipelines/boston_housing/train --tag greentropikal/boston_pipeline_train
+                docker build ./kubeflow-pipelines/boston_housing/preprocess_data --tag greentropikal/boston_pipeline_preprocessing
                 docker push greentropikal/boston_pipeline_preprocessing
 
          - run: 
