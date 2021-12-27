@@ -97,6 +97,6 @@ workflows:
           requires:
             - build-and-push-image
           cluster: k8s-challenge
-          filters:
-             branches:
-               only: [main]
+          # filters:
+          #    branches:
+          #      only: [main]
