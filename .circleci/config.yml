@@ -33,10 +33,43 @@ commands:
           doctl kubernetes cluster kubeconfig save <<parameters.cluster>>
 
 jobs:
+
+  build-and-push-image:
+    machine: true
+    steps:
+         - checkout
+         - run: 
+             name: Login to Dockerhub
+             command: |
+                echo $DOCKERHUB_PASSWORD | docker login -u $DOCKER_USER --password-stdin
+         - run: 
+             name: Build & Push the Preprocess image
+             command: |
+                docker build ./kubeflow-pipelines/boston_housing/train --tag greentropikal/boston_pipeline_train
+                docker push greentropikal/boston_pipeline_preprocessing
+
+         - run: 
+             name: Build & Push the Train image
+             command: |
+                docker build ./kubeflow-pipelines/boston_housing/train --tag greentropikal/boston_pipeline_train
+                docker push greentropikal/boston_pipeline_train
+         - run: 
+             name: Build & Push the Test image
+             command: |
+                docker build ./kubeflow-pipelines/boston_housing/test --tag greentropikal/boston_pipeline_test
+                docker push greentropikal/boston_pipeline_test
+         - run: 
+             name: Build & Push the Deploy image
+             command: |
+                docker build ./kubeflow-pipelines/boston_housing/deploy_model --tag greentropikal/boston_pipeline_deploy_model
+                docker push greentropikal/boston_pipeline_deploy_model
+          
+            
   install_and_initialize_cli:
     description: |
       Install doctl and initialize to connect to DigitalOcean
-    executor: <<parameters.executor>>
+    machine: true
+    # executor: <<parameters.executor>>
     parameters:
       cluster:
         description: "The Kubernetes cluster name."
@@ -59,7 +92,10 @@ jobs:
 workflows:
   deployment:
     jobs:
+      - build-and-push-image
       - install_and_initialize_cli:
+          requires:
+            - build-and-push-image
           cluster: k8s-challenge
           filters:
              branches:
